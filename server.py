@@ -15,6 +15,11 @@ frame = None  # Store latest frame
 def index():
     return render_template('index.html')  # Serve the HTML page
 
+@app.route('/better')
+def better():
+    return render_template('better.html')  # Serve the HTML page
+
+
 @app.route('/video_feed')
 def video_feed():
     def generate():
