@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Screen Broadcast</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            width: 80%;
+            max-width: 900px;
+            border: 2px solid black;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Screen Broadcast</h1>
+    <canvas id="videoCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("videoCanvas");
+        const ctx = canvas.getContext("2d");
+        const socket = new WebSocket("ws://" + "13.53.102.73:5000" + "/stream");
+
+        socket.binaryType = "arraybuffer"; // Expect binary JPEG data
+
+        socket.onmessage = function(event) {
+            const blob = new Blob([event.data], { type: "image/jpeg" });
+            const img = new Image();
+            
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+            };
+
+            img.src = URL.createObjectURL(blob);
+        };
+
+        socket.onclose = function() {
+            console.log("❌ Connection lost. Trying to reconnect...");
+            setTimeout(() => location.reload(), 3000);
+        };
+    </script>
+</body>
+</html>
